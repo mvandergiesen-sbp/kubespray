@@ -36,8 +36,9 @@ data:
 {% if enable_coredns_k8s_endpoint_pod_names %}
           endpoint_pod_names
 {% endif %}
-{% if enable_coredns_reverse_dns_lookups %}
-          fallthrough in-addr.arpa ip6.arpa
+{% if enable_coredns_reverse_dns_lookups or enable_coredns_fallthrough_dns_domain|default(false) %}
+          fallthrough {% if enable_coredns_fallthrough_dns_domain|default(false) %}{{ dns_domain }} {% endif %}{% if enable_coredns_reverse_dns_lookups %}in-addr.arpa ip6.arpa {% endif %}
+
 {% endif %}
         }
         prometheus :9153

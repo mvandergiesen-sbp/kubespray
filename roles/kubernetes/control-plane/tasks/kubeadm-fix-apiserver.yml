@@ -22,3 +22,14 @@
     regexp: '^    - --etcd-servers='
     line: '    - --etcd-servers={{ etcd_access_addresses }}'
   when: not etcd_kubeadm_enabled | default(false)
+
+- name: Add custom env settings to apiserver
+  vars:
+    block:
+      env: "{{ apiserver_custom_env }}"
+  blockinfile:
+    path: "{{ kube_config_dir }}/manifests/kube-apiserver.yaml"
+    marker: "# {mark} CUSTOM ENV"
+    insertbefore: "volumeMounts:"
+    block: "{{ block |to_nice_yaml( indent=2, width=3000) |indent(width=4, indentfirst=True) }}"
+  when: apiserver_custom_env
